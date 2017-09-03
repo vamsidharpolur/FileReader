@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.finra.file.vo.Employee;
 
@@ -51,9 +53,10 @@ public class Database {
         }
     }
 
-    public static void selectEmployees() throws SQLException {
+    public static List selectEmployees() throws SQLException {
         Connection connection = getDBConnection();
-        Statement stmt = null;
+        List<Employee> dbList = new ArrayList<Employee>();
+        
         PreparedStatement selectQuery = null;
         String SelectQuery = "select * from EMPLOYEE";
         try {
@@ -61,7 +64,12 @@ public class Database {
              ResultSet rs = selectQuery.executeQuery();
              
              while (rs.next()) {
+            	 Employee emp = new Employee();
                  System.out.println("Id " + rs.getInt("id") + " Name " + rs.getString("name")+ " Title " + rs.getString("title"));
+                 emp.setId(rs.getInt("id"));
+                 emp.setName(rs.getString("name"));
+                 emp.setTitle(rs.getString("title"));
+                 dbList.add(emp);
              }
              selectQuery.close();
         } catch (SQLException e) {
@@ -71,6 +79,7 @@ public class Database {
         } finally {
             connection.close();
         }
+        return dbList;
     }
     
     

@@ -1,7 +1,14 @@
 package com.finra.file.controller;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Scanner;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,9 +71,29 @@ public class EmployeeController {
 					scanner.close();
 					lineScanner.close();
 					// print the contents of the table on to the console
-					Database.selectEmployees();
-				 
+					List<Employee> empList = Database.selectEmployees();
+				//save the db contents on to a file
 					
+					Path downloadDir = Paths.get(new File(uploadingdir).getParent()+"\\download" );
+					System.out.println(downloadDir);
+			      //checking if the download directory exists or not
+			        if (!Files.exists(downloadDir)) {
+			            try {
+			                Files.createDirectories(downloadDir);
+			            } catch (IOException e) {
+			                //fail to create directory
+			                e.printStackTrace();
+			            }
+			        }
+			        
+			    	File dbFile = new File(downloadDir+"\\" + name);  
+			    	
+			    	BufferedWriter writer = new BufferedWriter(new FileWriter(dbFile));
+			       for(Employee emp : empList){
+			    	writer.write(emp.getId()+","+emp.getName()+","+emp.getTitle()+"\n");
+			       }
+			         
+			        writer.close();
 				 
 				return "You successfully uploaded " + name ;
 			} catch (Exception e) {
